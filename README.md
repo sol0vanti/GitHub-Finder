@@ -12,7 +12,7 @@
   <img height="400" src="https://github.com/skxnz/GitHub-Finder/blob/main/AppPreview/ErrorLabel.png" alt="Error preview">
   <img height="400" src="https://github.com/skxnz/GitHub-Finder/blob/main/AppPreview/DetailScreen.png" alt="Profile detail">
 </div>
-<h3>⚡️ Features</h3>
+<h2>⚡️ Features</h3>
 <ul>
 <li> Xcode,</li>
 <li> UIKit,</li>
