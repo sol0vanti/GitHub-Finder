@@ -9,7 +9,7 @@ import UIKit
 
 struct Followers: Codable {
     let login: String
-    let avatar_url: String
+    let avatarUrl: String
     let url: String
 }
 
@@ -42,7 +42,7 @@ class DetailViewController: UIViewController {
         
         let avatarUrl = URL(string: avatarStringUrl!)
         
-        getData(from: avatarUrl!) { data, response, error in
+        DetailViewController.getData(from: avatarUrl!) { data, response, error in
             guard let data = data, error == nil else { return }
             DispatchQueue.main.async() { [weak self] in
                 self?.logoImageView.image = UIImage(data: data)
@@ -50,7 +50,7 @@ class DetailViewController: UIViewController {
         }
     }
     
-    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+    static func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
     

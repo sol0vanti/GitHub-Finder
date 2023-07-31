@@ -12,6 +12,7 @@ class FollowersViewController: UIViewController, UITableViewDataSource {
     @IBOutlet weak var table: UITableView!
     
     var followers: [Followers]!
+    var avatarStringUrl: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,15 @@ class FollowersViewController: UIViewController, UITableViewDataSource {
         let follower = followers[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! FollowerTableViewCell
         cell.nicknameLabel.text = follower.login
+        
+        let avatarURL = URL(string: follower.avatarUrl)
+        
+        DetailViewController.getData(from: avatarURL!) { data, response, error in
+            guard let data = data, error == nil else { return }
+            DispatchQueue.main.async() { 
+                cell.iconImageView.image = UIImage(data: data)
+            }
+        }
         return cell
     }
 }
