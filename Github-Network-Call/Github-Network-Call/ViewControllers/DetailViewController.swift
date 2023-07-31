@@ -7,24 +7,35 @@
 
 import UIKit
 
+struct Follower: Codable {
+    let login: String
+    let avatar_url: String
+    let url: String
+}
+
 class DetailViewController: UIViewController {
+    @IBOutlet var friendsButton: UIButton!
     @IBOutlet var returnButton: UIButton!
     @IBOutlet var logoImageView: UIImageView!
     @IBOutlet var locationLabel: UILabel!
     @IBOutlet var bioLabel: UILabel!
     @IBOutlet var nameLabel: UILabel!
-    @IBOutlet var nicknameLabel: UILabel!
     
     var avatarStringUrl: String?
     var nickname: String?
     var name: String?
     var bio: String?
     var location: String?
+    
+    private var follower: Follower?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setUpStyles()
         
-        nicknameLabel.text = nickname
+        title = nickname
+        navigationController?.navigationBar.tintColor = .systemGreen
+        
         nameLabel.text = name
         bioLabel.text = bio
         locationLabel.text = location
@@ -45,5 +56,59 @@ class DetailViewController: UIViewController {
     
     @IBAction func returnButtonClicked(_ sender: UIButton) {
         navigationController?.popToRootViewController(animated: true)
+    }
+    
+    func setUpStyles(){
+        logoImageView.layer.borderWidth = 1
+        logoImageView.layer.masksToBounds = false
+        logoImageView.layer.borderColor = UIColor.white.cgColor
+        logoImageView.layer.cornerRadius = logoImageView.frame.height/2
+        logoImageView.clipsToBounds = true
+        
+        friendsButton.layer.cornerRadius = friendsButton.frame.height/2
+    }
+    
+    func getFollowers() async throws -> Follower {
+        let endpoint = "https://api.github.com/users/" + nickname! + "/followers"
+        
+        guard let url = URL(string: "\(String(describing: endpoint))") else {
+            throw GHError.invalidURL
+        }
+                
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw GHError.invalidResponse
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            return try decoder.decode(Follower.self, from: data)
+        } catch {
+            throw GHError.invalidData
+        }
+    }
+    
+    func showErrorAC(title: String, subtitile: String){
+        let ac = UIAlertController(title: title, message: subtitile, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .destructive))
+    }
+    
+    @IBAction func followersButtonClicked(_ sender: UIButton) {
+        Task { @MainActor in
+            do {
+                follower = try await getFollowers()
+                print("\(String(describing: follower?.avatar_url))")
+                print("\(String(describing: follower?.login))")
+                print("\(String(describing: follower?.url))")
+            } catch GHError.invalidURL {
+                showErrorAC(title: "Invalid URL", subtitile: "We cannot find the correct url. Please try again later.")
+            } catch GHError.invalidResponse {
+                showErrorAC(title: "Invalid Response", subtitile: "We cannot receive response from current URL request. Please try again later.")
+            } catch GHError.invalidData {
+                showErrorAC(title: "Invalid Data", subtitile: "We cannot get correct data from current URL request. Please try again later.")
+            }
+        }
     }
 }

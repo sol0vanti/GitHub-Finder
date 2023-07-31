@@ -33,7 +33,7 @@ class ViewController: UIViewController {
     }
     
     func getUser() async throws -> User {
-        var userNickname: String = userTextField.text!
+        let userNickname: String = userTextField.text!
         // replace url with https://api.github.com/users/\(user)
         let endpoint = "https://api.github.com/users/" + userNickname
         
