@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct Follower: Codable {
+struct Followers: Codable {
     let login: String
     let avatar_url: String
     let url: String
@@ -27,7 +27,7 @@ class DetailViewController: UIViewController {
     var bio: String?
     var location: String?
     
-    private var follower: Follower?
+    private var followers: Followers?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +68,7 @@ class DetailViewController: UIViewController {
         friendsButton.layer.cornerRadius = friendsButton.frame.height/2
     }
     
-    func getFollowers() async throws -> Follower {
+    func getFollowers() async throws -> Followers {
         let endpoint = "https://api.github.com/users/" + nickname! + "/followers"
         
         guard let url = URL(string: "\(String(describing: endpoint))") else {
@@ -84,7 +84,7 @@ class DetailViewController: UIViewController {
         do {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            return try decoder.decode(Follower.self, from: data)
+            return try decoder.decode(Followers.self, from: data)
         } catch {
             throw GHError.invalidData
         }
@@ -98,10 +98,7 @@ class DetailViewController: UIViewController {
     @IBAction func followersButtonClicked(_ sender: UIButton) {
         Task { @MainActor in
             do {
-                follower = try await getFollowers()
-                print("\(String(describing: follower?.avatar_url))")
-                print("\(String(describing: follower?.login))")
-                print("\(String(describing: follower?.url))")
+                followers = try await getFollowers()
             } catch GHError.invalidURL {
                 showErrorAC(title: "Invalid URL", subtitile: "We cannot find the correct url. Please try again later.")
             } catch GHError.invalidResponse {
