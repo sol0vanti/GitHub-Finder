@@ -27,7 +27,7 @@ class DetailViewController: UIViewController {
     var bio: String?
     var location: String?
     
-    private var followers: Followers?
+    private var followers: [Followers]?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,10 +54,6 @@ class DetailViewController: UIViewController {
         URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
     }
     
-    @IBAction func returnButtonClicked(_ sender: UIButton) {
-        navigationController?.popToRootViewController(animated: true)
-    }
-    
     func setUpStyles(){
         logoImageView.layer.borderWidth = 1
         logoImageView.layer.masksToBounds = false
@@ -68,7 +64,7 @@ class DetailViewController: UIViewController {
         friendsButton.layer.cornerRadius = friendsButton.frame.height/2
     }
     
-    func getFollowers() async throws -> Followers {
+    func getFollowers() async throws -> [Followers] {
         let endpoint = "https://api.github.com/users/" + nickname! + "/followers"
         
         guard let url = URL(string: "\(String(describing: endpoint))") else {
@@ -84,7 +80,7 @@ class DetailViewController: UIViewController {
         do {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            return try decoder.decode(Followers.self, from: data)
+            return try decoder.decode([Followers].self, from: data)
         } catch {
             throw GHError.invalidData
         }
@@ -99,6 +95,9 @@ class DetailViewController: UIViewController {
         Task { @MainActor in
             do {
                 followers = try await getFollowers()
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: "FollowersViewController") as? FollowersViewController
+                vc?.followers = followers
+                self.navigationController?.pushViewController(vc!, animated: true)
             } catch GHError.invalidURL {
                 showErrorAC(title: "Invalid URL", subtitile: "We cannot find the correct url. Please try again later.")
             } catch GHError.invalidResponse {

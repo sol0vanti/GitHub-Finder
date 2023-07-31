@@ -11,15 +11,7 @@ class FollowersViewController: UIViewController, UITableViewDataSource {
     
     @IBOutlet weak var table: UITableView!
     
-    struct  Followers {
-        let nickname: String
-        let imageURL: String
-    }
-    
-    let data: [Followers] = [
-    Followers(nickname: "skxnz", imageURL: "url"),
-    Followers(nickname: "Beaxhem", imageURL: "url")
-    ]
+    var followers: [Followers]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,13 +19,13 @@ class FollowersViewController: UIViewController, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
+        return followers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let follower = data[indexPath.row]
+        let follower = followers[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! FollowerTableViewCell
-        cell.nicknameLabel.text = follower.nickname
+        cell.nicknameLabel.text = follower.login
         return cell
     }
 }
