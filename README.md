@@ -1,9 +1,6 @@
 <div align="center" style="margin: 30px;">
 <h1>GitHub Finder</h1>
 
-[![forthebadge](http://forthebadge.com/images/badges/made-with-swift.svg)](http://forthebadge.com)
-[![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
-
 **GitHub Finder** is an app which allows you to find people's public `profile information` of `GitHub Account` using `Network Calls` in `GitHub API`.
 </div>
 <h2>👀 App Preview (28/07/2023: not current version)</h2>
